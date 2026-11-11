@@ -46,7 +46,23 @@
       form.reportValidity();
       return;
     }
+    // Send via fetch so the visitor stays on this site and lands on the
+    // ?sent=1 confirmation state instead of the form provider's own page.
+    e.preventDefault();
     if (status) status.textContent = "Sending your enquiry...";
+    fetch(form.action, {
+      method: "POST",
+      body: new FormData(form),
+      headers: { "Accept": "application/json" }
+    }).then(function (response) {
+      if (response.ok) {
+        location.href = "/contact.html?sent=1#enquiry";
+      } else {
+        form.submit();
+      }
+    }).catch(function () {
+      form.submit();
+    });
   });
 })();
 
